@@ -14,6 +14,14 @@ class TestLazyImports(unittest.TestCase):
         random_number = np.random.rand()
         self.assertIsInstance(np, LazyLoader)
         self.assertLess(random_number, 1.0)
+
+    def test_multiple_imports(self):
+        """Test multiple import statements."""
+        for _ in range(3):
+            with lazy():
+                import random
+        random_number = random.random()
+        self.assertLess(random_number, 1.0)
         
     def test_attribute_access(self):
         """Test accessing attributes triggers actual import."""
