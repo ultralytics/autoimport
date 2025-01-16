@@ -1,96 +1,99 @@
 <a href="https://www.ultralytics.com/" target="_blank"><img src="https://raw.githubusercontent.com/ultralytics/assets/main/logo/Ultralytics_Logotype_Original.svg" width="320" alt="Ultralytics logo"></a>
 
-# 🛠 Ultralytics Python Project Template
+# ⚡️ `autoimport`: Effortless Lazy Imports in Python
 
-This repository serves as the template for Python projects at [Ultralytics](https://www.ultralytics.com/). It encapsulates best practices, standard configurations, and essential project structures, streamlining the initiation process for new Python projects. By leveraging this template, developers at Ultralytics can ensure consistency and adherence to quality standards across all Python-based software developments.
+`autoimport` is a lightweight Python package that provides effortless lazy imports. By using the `lazy` context manager, modules are imported only when they are actually accessed, improving startup times and reducing initial memory footprint. Ideal for projects with heavy dependencies that are not always needed. The `ultralytics-autoimport` package is published on PyPI for easy installation.
 
-[![Template CI](https://github.com/ultralytics/template/actions/workflows/ci.yml/badge.svg)](https://github.com/ultralytics/template/actions/workflows/ci.yml) [![Ultralytics Actions](https://github.com/ultralytics/template/actions/workflows/format.yml/badge.svg)](https://github.com/ultralytics/template/actions/workflows/format.yml) <a href="https://discord.com/invite/ultralytics"><img alt="Discord" src="https://img.shields.io/discord/1089800235347353640?logo=discord&logoColor=white&label=Discord&color=blue"></a> <a href="https://community.ultralytics.com/"><img alt="Ultralytics Forums" src="https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue"></a> <a href="https://reddit.com/r/ultralytics"><img alt="Ultralytics Reddit" src="https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue"></a>
+[![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
+[![autoimport CI](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml) [![Ultralytics Actions](https://github.com/ultralytics/autoimport/actions/workflows/format.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/format.yml) <a href="https://discord.com/invite/ultralytics"><img alt="Discord" src="https://img.shields.io/discord/1089800235347353640?logo=discord&logoColor=white&label=Discord&color=blue"></a> <a href="https://community.ultralytics.com/"><img alt="Ultralytics Forums" src="https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue"></a> <a href="https://reddit.com/r/ultralytics"><img alt="Ultralytics Reddit" src="https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue"></a>
+
+## 🚀 Quick Start
+
+Install the `ultralytics-autoimport` package from PyPI:
+
+```bash
+pip install ultralytics-autoimport
+```
+
+Use the `lazy` context manager to defer imports:
+
+```python
+from autoimport import lazy
+
+with lazy():
+    import torch  # torch is only imported when used
+
+    print("Torch imported:", "torch" in globals())
+    torch.cuda.is_available()  # Now torch is imported
+    print("Torch imported:", "torch" in globals())
+```
 
 ## 🗂 Repository Structure
 
-The repository is meticulously organized to offer intuitive navigation and a clear understanding of the project components:
+The repository is organized for clarity and ease of development:
 
-- `src/` or `your_package_name/`: Contains the source code of the Python package, organized in modules and packages.
-- `tests/`: Dedicated to unit tests and integration tests, facilitating continuous testing practices.
-- `docs/`: (Optional) Houses project documentation, typically managed with tools like Sphinx.
-- `pyproject.toml`: Details for dependencies, formatting, packaging and distributing the project.
-- `.gitignore`: Configured to exclude unnecessary files from Git tracking.
-- `LICENSE`: Specifies the open-source license under which the project is released.
-- `.github/workflows/`: Contains GitHub Actions workflows for CI/CD processes.
-- `.pre-commit-config.yaml`: (Optional) Pre-commit hooks configuration for maintaining code quality.
-- `Dockerfile`: (Optional) For containerizing the project environment.
-- `environment.yml`: (Optional, for Conda users) Manages Conda environment dependencies.
+- `src/autoimport/`: Contains the source code of the `autoimport` package.
+- `tests/`: Unit tests to ensure code reliability.
+- `pyproject.toml`: Project configuration, including dependencies and packaging details.
+- `.gitignore`: Specifies files to be excluded from Git tracking.
+- `LICENSE`: The open-source license for the project (AGPL-3.0).
+- `.github/workflows/`: GitHub Actions workflows for CI/CD.
 
 ```
-your-project/
+autoimport/
 │
-├── your_package_name/
-│   ├── __init__.py
-│   ├── module1.py
-│   ├── module2.py
-│   └── ...
+├── src/
+│   └── autoimport/
+│       ├── __init__.py
+│       └── ...
 │
 ├── tests/
 │   ├── __init__.py
-│   ├── test_module1.py
-│   └── ...
-│
-├── docs/
+│   ├── test_autoimport.py
 │   └── ...
 │
 ├── pyproject.toml
 └── README.md
 ```
 
-### Source Code in `src/` or `your_package_name/` Directory 📂
+### Source Code in `src/autoimport/` Directory 📂
 
-The `src/` or `your_package_name/` directory is the heart of your project, containing the Python code that constitutes your package. This structure encourages clean imports and testing practices.
+The `src/autoimport/` directory contains the core Python code for the `autoimport` package.
 
 ### Testing with the `tests/` Directory 🧪
 
-The `tests/` directory is crucial for maintaining the reliability and robustness of your code. It should include comprehensive tests that cover various aspects of your package.
-
-### Documentation in `docs/` Directory 📚
-
-For projects requiring extensive documentation, the `docs/` directory serves as the go-to place. It's typically set up with Sphinx for generating high-quality documentation.
+The `tests/` directory includes tests to maintain code quality and prevent regressions.
 
 ## ➕ Starting a New Project
 
-To kickstart a new Python project with this template:
+This repository can also serve as a template for new Python projects at [Ultralytics](https://www.ultralytics.com/).
 
-1. **Create Your New Repository**: Use this template to generate a new repository for your project.
-2. **Customize the Template**: Tailor the template files like `pyproject.toml`, `.pre-commit-config.yaml`, and GitHub workflow YAMLs to suit your project's needs.
-3. **Develop Your Package**: Begin adding your code into the `src/` or `your_package_name/` directory and corresponding tests in the `tests/` directory.
-4. **Document Your Project**: Update the README and, if necessary, add documentation to the `docs/` directory.
-5. **Continuous Integration**: Leverage the pre-configured GitHub Actions for automated testing and other CI/CD processes.
+To use it as a template:
 
-## 🔧 Utilizing the Template
-
-For Ultralytics team members and contributors:
-
-- Clone the template repository to get started on a new Python project.
-- Update the `README.md` to reflect your project's specifics.
-- Remove or modify any optional components (like `Dockerfile`, `pyproject.toml`) based on the project's requirements.
-
-With this template, Ultralytics aims to foster a culture of excellence and uniformity in Python software development, ensuring that each project is built on a solid foundation of industry standards and organizational best practices.
+1. **Create a New Repository:** Use this as a template to generate a new repository.
+2. **Customize:** Modify `pyproject.toml`, `.pre-commit-config.yaml` (if applicable), and GitHub workflow YAMLs as needed.
+3. **Develop:** Add your code to `src/your_package_name/` and tests to `tests/`.
+4. **Document:** Update the README and add documentation if necessary.
+5. **CI/CD:** Utilize the pre-configured GitHub Actions for automated testing.
 
 ## 💡 Contribute
 
-Ultralytics thrives on community collaboration; we immensely value your involvement! We urge you to peruse our [Contributing Guide](https://docs.ultralytics.com/help/contributing/) for detailed insights on how you can participate. Don't forget to share your feedback with us by contributing to our [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). A heartfelt thank you 🙏 goes out to everyone who has already contributed!
+Ultralytics thrives on community contributions! Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing/) for details on how to participate. Share your feedback in our [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). Thank you 🙏 to all our contributors!
 
 <a href="https://github.com/ultralytics/yolov5/graphs/contributors">
 <img width="100%" src="https://github.com/ultralytics/assets/raw/main/im/image-contributors.png" alt="Ultralytics open-source contributors"></a>
 
 ## 📄 License
 
-Ultralytics presents two distinct licensing paths to accommodate a variety of scenarios:
+Ultralytics offers two licensing options:
 
-- **AGPL-3.0 License**: This official [OSI-approved](https://opensource.org/license) open-source license is perfectly aligned with the goals of students, enthusiasts, and researchers who believe in the virtues of open collaboration and shared wisdom. Details are available in the [LICENSE](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) document.
-- **Enterprise License**: Tailored for commercial deployment, this license authorizes the unfettered integration of Ultralytics software and AI models within commercial goods and services, without the copyleft stipulations of AGPL-3.0. Should your use case demand an enterprise solution, direct your inquiries to [Ultralytics Licensing](https://www.ultralytics.com/license).
+- **AGPL-3.0 License**: An OSI-approved open-source license for students, enthusiasts, and researchers. See [LICENSE](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) for details.
+- **Enterprise License**: For commercial use, allowing integration of Ultralytics software and AI models into commercial products without the AGPL-3.0 copyleft restrictions. Contact [Ultralytics Licensing](https://www.ultralytics.com/license) if this is required.
 
 ## 📮 Contact
 
-For bugs or feature suggestions pertaining to Ultralytics, please lodge an issue via [GitHub Issues](https://github.com/ultralytics/template/issues). You're also invited to participate in our [Discord](https://discord.com/invite/ultralytics) community to engage in discussions and seek advice!
+For issues or feature suggestions, please open a [GitHub Issue](https://github.com/ultralytics/autoimport/issues). You can also join our [Discord](https://discord.com/invite/ultralytics) community!
 
 <br>
 <div align="center">
