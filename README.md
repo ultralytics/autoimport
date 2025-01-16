@@ -21,19 +21,18 @@ pip install ultralytics-autoimport
 Use the `lazy` context manager to defer imports:
 
 ```python
+from autoimport import lazy
 import time
 
-from autoimport import lazy
-
 with lazy():
-    t0 = time.perf_counter()
-    import torch
+    t = time.perf_counter()
+    import torch  # Import is deferred until first use
+    elapsed_import = 
+    print(f"Initial import time: {time.perf_counter() - t:.3f}s")  # Example output: 0.000s
 
-    print(f"Initial import: {time.perf_counter() - t0:.3f}s")  # Initial import: 0.000s
-
-t1 = time.perf_counter()
-torch.cuda.is_available()  # package is imported here
-print(f"First use: {time.perf_counter() - t1:.3f}s")  # First use: 0.462s
+t = time.perf_counter()
+torch.cuda.is_available()  # Package is actually loaded here
+print(f"First use time: {time.perf_counter() - t:.3f}s")  # Example output: 0.462s
 ```
 
 ## 🗂 Repository Structure
