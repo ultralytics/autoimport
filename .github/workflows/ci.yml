@@ -2,7 +2,7 @@
 
 # Continuous Integration (CI) GitHub Actions tests
 
-name: Template CI
+name: CI
 
 on:
   push:
