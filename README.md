@@ -27,7 +27,7 @@ import time
 with lazy():
     t = time.perf_counter()
     import torch  # Import is deferred until first use
-    elapsed_import = 
+    elapsed_import =
     print(f"Initial import time: {time.perf_counter() - t:.3f}s")  # Example output: 0.000s
 
 t = time.perf_counter()
