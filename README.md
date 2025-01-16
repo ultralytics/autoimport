@@ -4,13 +4,14 @@
 
 `autoimport` is a lightweight Python package that provides effortless lazy imports. By using the `lazy` context manager, modules are imported only when they are actually accessed, improving startup times and reducing initial memory footprint. Ideal for projects with heavy dependencies that are not always needed. The `ultralytics-autoimport` package is published on PyPI for easy installation.
 
-[![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
 [![autoimport CI](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml) [![Ultralytics Actions](https://github.com/ultralytics/autoimport/actions/workflows/format.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/format.yml) <a href="https://discord.com/invite/ultralytics"><img alt="Discord" src="https://img.shields.io/discord/1089800235347353640?logo=discord&logoColor=white&label=Discord&color=blue"></a> <a href="https://community.ultralytics.com/"><img alt="Ultralytics Forums" src="https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue"></a> <a href="https://reddit.com/r/ultralytics"><img alt="Ultralytics Reddit" src="https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue"></a>
 
 ## 🚀 Quick Start
 
 Install the `ultralytics-autoimport` package from PyPI:
+
+[![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
 
 ```bash
 pip install ultralytics-autoimport
