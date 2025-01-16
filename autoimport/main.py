@@ -31,12 +31,9 @@ class LazyLoader(types.ModuleType):
         self._load_module()
         return getattr(self._module, attr)
 
-    def __dir__(self):  # For better autocompletion
+    def __dir__(self):    # For better autocompletion
         """Returns built-in dir() result when module is not loaded to support autocompletion without triggering load."""
-        if self._module is not None:  # Only load if already loaded
-            return dir(self._module)
-        else:
-            return super().__dir__()  # Return default dir() for unloaded modules
+        return dir(self._module) if self._module is not None else super().__dir__()
 
     def __repr__(self):
         """Returns a string representation of the LazyLoader module wrapper instance."""
