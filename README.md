@@ -8,6 +8,7 @@
 
 ## 🚀 Quick Start
 
+
 Install the `ultralytics-autoimport` package from PyPI:
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
