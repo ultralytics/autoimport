@@ -25,14 +25,13 @@ from autoimport import lazy
 import time
 
 with lazy():
-    t = time.perf_counter()
+    t0 = time.perf_counter()
     import torch  # Import is deferred until first use
-    elapsed_import =
-    print(f"Initial import time: {time.perf_counter() - t:.3f}s")  # Example output: 0.000s
+    print(f"Initial import time: {time.perf_counter() - t0:.3f}s")  # Example output: 0.000s
 
-t = time.perf_counter()
+t1 = time.perf_counter()
 torch.cuda.is_available()  # Package is actually loaded here
-print(f"First use time: {time.perf_counter() - t:.3f}s")  # Example output: 0.462s
+print(f"First use time: {time.perf_counter() - t1:.3f}s")  # Example output: 0.462s
 ```
 
 ## 🗂 Repository Structure
