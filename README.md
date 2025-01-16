@@ -24,9 +24,9 @@ from autoimport import lazy
 with lazy():
     import torch  # torch is only imported when used
 
-    print("Torch imported:", 'torch' in globals())
-    torch.cuda.is_available() # Now torch is imported
-    print("Torch imported:", 'torch' in globals())
+    print("Torch imported:", "torch" in globals())
+    torch.cuda.is_available()  # Now torch is imported
+    print("Torch imported:", "torch" in globals())
 ```
 
 ## 🗂 Repository Structure
@@ -88,8 +88,8 @@ Ultralytics thrives on community contributions! Please see our [Contributing Gui
 
 Ultralytics offers two licensing options:
 
--   **AGPL-3.0 License**: An OSI-approved open-source license for students, enthusiasts, and researchers. See [LICENSE](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) for details.
--   **Enterprise License**: For commercial use, allowing integration of Ultralytics software and AI models into commercial products without the AGPL-3.0 copyleft restrictions. Contact [Ultralytics Licensing](https://www.ultralytics.com/license) if this is required.
+- **AGPL-3.0 License**: An OSI-approved open-source license for students, enthusiasts, and researchers. See [LICENSE](https://github.com/ultralytics/ultralytics/blob/main/LICENSE) for details.
+- **Enterprise License**: For commercial use, allowing integration of Ultralytics software and AI models into commercial products without the AGPL-3.0 copyleft restrictions. Contact [Ultralytics Licensing](https://www.ultralytics.com/license) if this is required.
 
 ## 📮 Contact
 
