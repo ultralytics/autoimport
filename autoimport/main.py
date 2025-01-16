@@ -119,7 +119,7 @@ if __name__ == "__main__":
     print(linalg.det(A))
     print(time.perf_counter() - t5)
 
-    # Direct usage of LayzLoader class  
+    # Direct usage of LayzLoader class
     t6 = time.perf_counter()
     seaborn_lazy = LazyLoader("seaborn")
     print(time.perf_counter() - t6)
