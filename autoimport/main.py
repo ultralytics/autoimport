@@ -41,10 +41,11 @@ class LazyLoader(types.ModuleType):
 
 class lazy:
     """Context manager for lazy imports."""
-    _lazy_modules = {}  # Store lazy modules here
+
     def __init__(self):
         """Initializes a context manager for lazy module imports to optimize startup time and memory usage."""
         self._original_import = builtins.__import__
+        self._lazy_modules = {}  # Store lazy modules here
         self._globals = {}
 
     def __enter__(self):
@@ -71,10 +72,10 @@ class lazy:
                 return types.SimpleNamespace(
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
-            elif module_name in globals:
-                return globals[module_name]
             else:
                 if module_name in sys.modules:
+                    self._lazy_modules[module_name] = globals[module_name]  # avoid duplicate issue
+                elif module_name in sys.modules:
                     self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
                 elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
