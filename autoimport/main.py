@@ -41,10 +41,11 @@ class LazyLoader(types.ModuleType):
 
 class lazy:
     """Context manager for lazy imports."""
-    _lazy_modules = {}
+
     def __init__(self):
         """Initializes a context manager for lazy module imports to optimize startup time and memory usage."""
         self._original_import = builtins.__import__
+        self._lazy_modules = {}  # Store lazy modules here
         self._globals = None
 
     def __enter__(self):
