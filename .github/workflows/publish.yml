@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.x"
       - uses: astral-sh/setup-uv@v5
-      - run: uv pip install --system --no-cache git+https://github.com/ultralytics/actions@glenn-jocher-patch-1
+      - run: uv pip install --system --no-cache ultralytics-actions
       - id: check_pypi
         shell: python
         run: |
