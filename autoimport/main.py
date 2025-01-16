@@ -46,14 +46,12 @@ class lazy:
         """Initializes a context manager for lazy module imports to optimize startup time and memory usage."""
         self._original_import = builtins.__import__
         self._lazy_modules = {}  # Store lazy modules here
-        self._globals = {}
 
     def __enter__(self):
         """Enters a context where imports are lazy-loaded, replacing Python's default import mechanism."""
 
         def lazy_import(name, globals=None, locals=None, fromlist=(), level=0):
             module_name = name
-            self._globals = globals
             if level > 0:
                 # Calculate absolute name for relative imports
                 package = globals["__package__"]
@@ -73,13 +71,18 @@ class lazy:
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
             else:
-                if module_name in sys.modules:
-                    self._lazy_modules[module_name] = globals[module_name]  # avoid duplicate issue
+                if module_name in globals:
+                    self._lazy_modules[module_name] = globals[module_name]
                 elif module_name in sys.modules:
                     self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
                 elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
-                globals[module_name] = self._lazy_modules[module_name]  # add manually for subpackage
+
+                if "." in name: # we need to send loader for parent before subpackage
+                   parts = name.split('.')
+                   parent = ['.'.join(parts[:i]) for i in range(1, len(parts))][0]
+                   return LazyLoader(parent)
+
                 return self._lazy_modules[module_name]
 
         builtins.__import__ = lazy_import
@@ -87,16 +90,6 @@ class lazy:
     def __exit__(self, *args):
         """Restores the original import mechanism and updates sys.modules with any loaded lazy modules."""
         builtins.__import__ = self._original_import
-        # Now that builtins is restored, we can load any modules that need loading
-        for name, lazy_module in self._lazy_modules.items():
-            if "." in name:
-                parts = name.split('.')
-                parents = ['.'.join(parts[:i]) for i in range(1, len(parts))]
-                for parent in parents:
-                    p = self._globals.get(parent, None)
-                    if p is None or p.__name__ == name:
-                        # handle subpackage imports
-                        self._globals[parent] = sys.modules.get(parent, LazyLoader(parent))
 
 if __name__ == "__main__":
     import time
