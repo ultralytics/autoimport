@@ -33,7 +33,7 @@ with lazy():
 
 The repository is organized for clarity and ease of development:
 
-- `src/autoimport/`: Contains the source code of the `autoimport` package.
+- `autoimport/`: Contains the source code of the `autoimport` package.
 - `tests/`: Unit tests to ensure code reliability.
 - `pyproject.toml`: Project configuration, including dependencies and packaging details.
 - `.gitignore`: Specifies files to be excluded from Git tracking.
@@ -43,10 +43,9 @@ The repository is organized for clarity and ease of development:
 ```
 autoimport/
 │
-├── src/
-│   └── autoimport/
-│       ├── __init__.py
-│       └── ...
+├── autoimport/
+│   ├── __init__.py
+│   └── ...
 │
 ├── tests/
 │   ├── __init__.py
