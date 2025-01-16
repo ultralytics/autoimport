@@ -3,7 +3,6 @@
 import builtins
 import importlib
 import sys
-import time
 import types
 
 
@@ -99,7 +98,9 @@ class lazy:
                         self._globals[parent] = sys.modules.get(parent, LazyLoader(parent))
 
 if __name__ == "__main__":
-    # Context manager tests -----------------------------
+    import time
+
+    # Context manager
     with lazy():
         t0 = time.perf_counter()
         import numpy as np
