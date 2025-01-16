@@ -89,7 +89,7 @@ class lazy:
         # Now that builtins is restored, we can load any modules that need loading
         for name, lazy_module in self._lazy_modules.items():
             if "." in name:
-                parts = s.split('.')
+                parts = name.split('.')
                 parents = ['.'.join(parts[:i]) for i in range(1, len(parts))]
                 for parent in parents:
                     p = self._globals.get(parent, None)
