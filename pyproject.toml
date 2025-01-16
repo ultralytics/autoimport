@@ -64,8 +64,7 @@ dependencies = []
 # Optional dependencies ------------------------------------------------------------------------------------------------
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "mkdocs",
+    "numpy",
 ]
 
 [project.urls]  # Optional

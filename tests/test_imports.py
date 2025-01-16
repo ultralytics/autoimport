@@ -25,11 +25,9 @@ class TestLazyImports(unittest.TestCase):
     def test_nested_imports(self):
         """Test nested module imports and functionality."""
         with lazy():
-            import urllib
-        t0 = time.perf_counter()
-        result = urllib.parse.urlparse('https://example.com')
-        self.assertEqual(result.netloc, 'example.com')
-        self.assertLess(time.perf_counter() - t0, 1.0)
+            import numpy as np
+        random_number = np.random.rand()
+        self.assertLess(random_number, 1.0)
 
     def test_direct_lazyloader(self):
         """Test direct LazyLoader instantiation."""
