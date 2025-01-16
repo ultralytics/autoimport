@@ -2,7 +2,7 @@
 
 # Continuous Integration (CI) GitHub Actions tests
 
-name: Template CI
+name: CI
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.8", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -36,4 +36,4 @@ jobs:
 
       - name: Run Python tests
         run: |
-          python -m pytest tests -v
+          python -m unittest discover tests -v
