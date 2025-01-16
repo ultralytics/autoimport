@@ -36,4 +36,4 @@ jobs:
 
       - name: Run Python tests
         run: |
-          python -m pytest tests -v
+          python -m unittest discover tests -v
