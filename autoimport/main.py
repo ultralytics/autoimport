@@ -3,6 +3,7 @@
 import builtins
 import importlib
 import sys
+import time
 import types
 
 
@@ -30,9 +31,12 @@ class LazyLoader(types.ModuleType):
         self._load_module()
         return getattr(self._module, attr)
 
-    def __dir__(self):
-        """Returns default dir() for unloaded modules or the module if already loaded."""
-        return dir(self._module) if self._module is not None else super().__dir__()
+    def __dir__(self):  # For better autocompletion
+        """Returns built-in dir() result when module is not loaded to support autocompletion without triggering load."""
+        if self._module is not None:  # Only load if already loaded
+            return dir(self._module)
+        else:
+            return super().__dir__()  # Return default dir() for unloaded modules
 
     def __repr__(self):
         """Returns a string representation of the LazyLoader module wrapper instance."""
@@ -41,17 +45,18 @@ class LazyLoader(types.ModuleType):
 
 class lazy:
     """Context manager for lazy imports."""
-
+    _lazy_modules = {}
     def __init__(self):
         """Initializes a context manager for lazy module imports to optimize startup time and memory usage."""
         self._original_import = builtins.__import__
-        self._lazy_modules = {}  # Store lazy modules here
+        self._globals = None
 
     def __enter__(self):
         """Enters a context where imports are lazy-loaded, replacing Python's default import mechanism."""
 
         def lazy_import(name, globals=None, locals=None, fromlist=(), level=0):
             module_name = name
+            self._globals = globals
             if level > 0:
                 # Calculate absolute name for relative imports
                 package = globals["__package__"]
@@ -70,27 +75,34 @@ class lazy:
                 return types.SimpleNamespace(
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
+            elif module_name in globals:
+                return globals[module_name]
             else:
-                if module_name not in self._lazy_modules:
+                if module_name in sys.modules:
+                    self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
+                elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
+                globals[module_name] = self._lazy_modules[module_name]  # add manually for subpackage
                 return self._lazy_modules[module_name]
 
         builtins.__import__ = lazy_import
-        return self
 
     def __exit__(self, *args):
         """Restores the original import mechanism and updates sys.modules with any loaded lazy modules."""
         builtins.__import__ = self._original_import
         # Now that builtins is restored, we can load any modules that need loading
         for name, lazy_module in self._lazy_modules.items():
-            if name in sys.modules:  # Update sys.modules to avoid issues with subsequent imports
-                sys.modules[name] = lazy_module
-
+            if "." in name:
+                parts = s.split('.')
+                parents = ['.'.join(parts[:i]) for i in range(1, len(parts))]
+                for parent in parents:
+                    p = self._globals.get(parent, None)
+                    if p is None or (isinstance(p, LazyLoader) and p.__name__ == name):
+                        # handle subpackage imports
+                        self._globals[parent] = sys.modules.get(parent, LazyLoader(parent))
 
 if __name__ == "__main__":
-    import time
-
-    # Context manager
+    # Context manager tests -----------------------------
     with lazy():
         t0 = time.perf_counter()
         import numpy as np
@@ -119,7 +131,7 @@ if __name__ == "__main__":
     print(linalg.det(A))
     print(time.perf_counter() - t5)
 
-    # Direct usage of LayzLoader class
+    # Direct LazyLoader() tests ------------------------
     t6 = time.perf_counter()
     seaborn_lazy = LazyLoader("seaborn")
     print(time.perf_counter() - t6)
