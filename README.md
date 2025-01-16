@@ -22,13 +22,16 @@ Use the `lazy` context manager to defer imports:
 
 ```python
 from autoimport import lazy
+import time
 
 with lazy():
-    import torch  # torch is only imported when used
+    t0 = time.perf_counter()
+    import torch
+    print(f"Initial import: {time.perf_counter() - t0:.3f}s")  # Initial import: 0.000s
 
-    print("Torch imported:", "torch" in globals())
-    torch.cuda.is_available()  # Now torch is imported
-    print("Torch imported:", "torch" in globals())
+t1 = time.perf_counter()
+torch.cuda.is_available()  # package is imported here
+print(f"First use: {time.perf_counter() - t1:.3f}s")  # First use: 0.462s
 ```
 
 ## 🗂 Repository Structure
