@@ -94,7 +94,7 @@ class lazy:
                 parents = ['.'.join(parts[:i]) for i in range(1, len(parts))]
                 for parent in parents:
                     p = self._globals.get(parent, None)
-                    if p is None or isinstance(p, LazyLoader) or p.__name__ == name:
+                    if p is None or p.__name__ == name:
                         # handle subpackage imports
                         self._globals[parent] = sys.modules.get(parent, LazyLoader(parent))
 
