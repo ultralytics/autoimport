@@ -12,7 +12,7 @@ class TestLazyImports(unittest.TestCase):
         with lazy():
             import numpy as np
         random_number = np.random.rand()
-        self.assertIsInstance(json, LazyLoader)
+        self.assertIsInstance(np, LazyLoader)
         self.assertLess(random_number, 1.0)
         
     def test_attribute_access(self):
