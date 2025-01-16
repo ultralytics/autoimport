@@ -65,7 +65,8 @@ dependencies = []
 # Optional dependencies ------------------------------------------------------------------------------------------------
 [project.optional-dependencies]
 dev = [
-    "numpy",  # for import tests
+    "numpy",  # for tests
+    "torch",
 ]
 
 [project.urls]  # Optional
