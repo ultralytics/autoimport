@@ -16,7 +16,7 @@ class TestLazyImports(unittest.TestCase):
         self.assertLess(random_number, 1.0)
 
     def test_multiple_imports(self):
-        """Test basic import statements."""
+        """Test multiple import statements."""
         for _ in range(3):
             with lazy():
                 import random
