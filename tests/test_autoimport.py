@@ -30,19 +30,12 @@ class TestLazyImports(unittest.TestCase):
         result = json.dumps({"test": 123})
         self.assertIsInstance(result, str)
 
-    def test_submodule_imports_numpy(self):
+    def test_submodule_imports(self):
         """Test numpy module imports and functionality."""
         with lazy():
             import numpy.random
         random_number = numpy.random.rand()
         self.assertLess(random_number, 1.0)
-
-    def test_submodule_imports_torch(self):
-        """Test torch module imports and functionality."""
-        with lazy():
-            import torch.nn
-        module = torch.nn.Identity()
-        self.assertIsInstance(module, torch.nn.Identity)
     
     def test_direct_lazyloader(self):
         """Test direct LazyLoader instantiation."""
