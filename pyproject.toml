@@ -30,12 +30,13 @@ description = "Ultralytics autoimport Python Package"  # Optional
 readme = "README.md"  # Optional
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
-keywords = ["Ultralytics", "autoimport", "lazy imports"]  # Optional
+keywords = ["Ultralytics", "autoimport", "lazy imports"]
 authors = [
-    { name = "Glenn Jocher", email = "glenn.jocher@ultralytics.com" } # Optional
+    { name = "Glenn Jocher", email = "glenn.jocher@ultralytics.com" },
+    { name = "Mohammed Yasin", email = "yasin@ultralytics.com" }
 ]
 maintainers = [
-    { name = "Glenn Jocher", email = "glenn.jocher@ultralytics.com" } # Optional
+    { name = "Ultralytics", email = "hello@ultralytics.com" },
 ]
 classifiers = [# Optional, for a list of valid classifiers, see https://pypi.org/classifiers/
     "Development Status :: 4 - Beta",
