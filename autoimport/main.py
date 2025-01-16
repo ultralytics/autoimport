@@ -31,12 +31,9 @@ class LazyLoader(types.ModuleType):
         self._load_module()
         return getattr(self._module, attr)
 
-    def __dir__(self):  # For better autocompletion
-        """Returns built-in dir() result when module is not loaded to support autocompletion without triggering load."""
-        if self._module is not None:  # Only load if already loaded
-            return dir(self._module)
-        else:
-            return super().__dir__()  # Return default dir() for unloaded modules
+    def __dir__(self):
+        """Returns default dir() for unloaded modules or the module if already loaded."""
+        return dir(self._module) if self._module is not None else super().__dir__()
 
     def __repr__(self):
         """Returns a string representation of the LazyLoader module wrapper instance."""
@@ -97,7 +94,7 @@ class lazy:
                 parents = ['.'.join(parts[:i]) for i in range(1, len(parts))]
                 for parent in parents:
                     p = self._globals.get(parent, None)
-                    if p is None or (isinstance(p, LazyLoader) and p.__name__ == name):
+                    if p is None or isinstance(p, LazyLoader) or p.__name__ == name:
                         # handle subpackage imports
                         self._globals[parent] = sys.modules.get(parent, LazyLoader(parent))
 
@@ -131,7 +128,7 @@ if __name__ == "__main__":
     print(linalg.det(A))
     print(time.perf_counter() - t5)
 
-    # Direct LazyLoader() tests ------------------------
+    # Direct usage of LayzLoader class
     t6 = time.perf_counter()
     seaborn_lazy = LazyLoader("seaborn")
     print(time.perf_counter() - t6)
