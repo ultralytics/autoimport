@@ -22,7 +22,7 @@ class LazyLoader(types.ModuleType):
             self._loading = True  # Set loading flag
             try:
                 self._module = importlib.import_module(self.__name__)
-                self.__class__ = self._module.__class__  # Change the class to the actual module's class
+                # self.__class__ = self._module.__class__  # Change the class to the actual module's class
             finally:
                 self._loading = False  # Reset loading flag
 
