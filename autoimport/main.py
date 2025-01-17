@@ -71,7 +71,7 @@ class lazy:
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
             else:
-                if "." in name: # we need to only send parent package
+                if "." in name: # we need to only return parent package
                    module_name = name.split('.')[0]
 
                 if globals is not None and module_name in globals:
