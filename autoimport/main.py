@@ -71,13 +71,13 @@ class lazy:
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
             else:
-                if "." in name: # we need to only return parent package
-                   module_name = name.split('.')[0]
+                if "." in name:  # we need to only return parent package
+                    module_name = name.split(".")[0]
 
                 if globals and module_name in globals:
                     self._lazy_modules[module_name] = globals[module_name]
                 elif module_name in sys.modules:
-                    self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
+                    self._lazy_modules[module_name] = sys.modules[module_name]  # module already loaded in session
                 elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
 
@@ -88,6 +88,7 @@ class lazy:
     def __exit__(self, *args):
         """Restores the original import mechanism and updates sys.modules with any loaded lazy modules."""
         builtins.__import__ = self._original_import
+
 
 if __name__ == "__main__":
     import time
