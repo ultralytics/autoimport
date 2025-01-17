@@ -71,21 +71,25 @@ class lazy:
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
             else:
-                if module_name not in self._lazy_modules:
+                if module_name in globals:
+                    self._lazy_modules[module_name] = globals[module_name]
+                elif module_name in sys.modules:
+                    self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
+                elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
+
+                if "." in name: # we need to send loader for parent before subpackage
+                   parts = name.split('.')
+                   parent = ['.'.join(parts[:i]) for i in range(1, len(parts))][0]
+                   return LazyLoader(parent)
+
                 return self._lazy_modules[module_name]
 
         builtins.__import__ = lazy_import
-        return self
 
     def __exit__(self, *args):
         """Restores the original import mechanism and updates sys.modules with any loaded lazy modules."""
         builtins.__import__ = self._original_import
-        # Now that builtins is restored, we can load any modules that need loading
-        for name, lazy_module in self._lazy_modules.items():
-            if name in sys.modules:  # Update sys.modules to avoid issues with subsequent imports
-                sys.modules[name] = lazy_module
-
 
 if __name__ == "__main__":
     import time

@@ -31,12 +31,12 @@ class TestLazyImports(unittest.TestCase):
         self.assertIsInstance(result, str)
 
     def test_submodule_imports(self):
-        """Test nested module imports and functionality."""
+        """Test numpy module imports and functionality."""
         with lazy():
             import numpy.random
         random_number = numpy.random.rand()
         self.assertLess(random_number, 1.0)
-
+    
     def test_direct_lazyloader(self):
         """Test direct LazyLoader instantiation."""
         base64_lazy = LazyLoader("base64")
