@@ -74,17 +74,15 @@ class lazy:
                     **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
                 )
             else:
-                if module_name in globals:
+                if "." in name:  # we need to only return parent package
+                    module_name = name.split(".")[0]
+
+                if globals and module_name in globals:
                     self._lazy_modules[module_name] = globals[module_name]
                 elif module_name in sys.modules:
                     self._lazy_modules[module_name] = sys.modules[module_name]  # module already loaded in session
                 elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
-
-                if "." in name:  # we need to send loader for parent before subpackage
-                    parts = name.split(".")
-                    parent = [".".join(parts[:i]) for i in range(1, len(parts))][0]
-                    return LazyLoader(parent)
 
                 return self._lazy_modules[module_name]
 
@@ -98,7 +96,7 @@ class lazy:
 if __name__ == "__main__":
     import time
 
-    # Context manager
+    # Context manager usage
     with lazy():
         t0 = time.perf_counter()
         import numpy as np
@@ -127,7 +125,7 @@ if __name__ == "__main__":
     print(linalg.det(A))
     print(time.perf_counter() - t5)
 
-    # Direct usage of LayzLoader class
+    # Direct LayzLoader() usage
     t6 = time.perf_counter()
     seaborn_lazy = LazyLoader("seaborn")
     print(time.perf_counter() - t6)
