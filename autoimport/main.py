@@ -22,7 +22,7 @@ class LazyLoader(types.ModuleType):
             self._loading = True  # Set loading flag
             try:
                 self._module = importlib.import_module(self.__name__)
-                for attr in ['__file__', '__path__', '__package__', '__spec__', '__class__']:
+                for attr in ["__file__", "__path__", "__package__", "__spec__", "__class__"]:
                     if hasattr(self._module, attr):
                         setattr(self, attr, getattr(self._module, attr))
             finally:
