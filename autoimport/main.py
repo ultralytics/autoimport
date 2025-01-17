@@ -37,7 +37,7 @@ class LazyLoader(types.ModuleType):
 
     def __repr__(self):
         """Returns a string representation of the LazyLoader module wrapper instance."""
-        #if self._module is not None:
+        # if self._module is not None:
         #    return repr(self._module)  # Use the module's repr after loading
         return f"<LazyLoader for '{self.__name__}'>"
 
@@ -77,14 +77,14 @@ class lazy:
                 if module_name in globals:
                     self._lazy_modules[module_name] = globals[module_name]
                 elif module_name in sys.modules:
-                    self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
+                    self._lazy_modules[module_name] = sys.modules[module_name]  # module already loaded in session
                 elif module_name not in self._lazy_modules:
                     self._lazy_modules[module_name] = LazyLoader(module_name)
 
-                if "." in name: # we need to send loader for parent before subpackage
-                   parts = name.split('.')
-                   parent = ['.'.join(parts[:i]) for i in range(1, len(parts))][0]
-                   return LazyLoader(parent)
+                if "." in name:  # we need to send loader for parent before subpackage
+                    parts = name.split(".")
+                    parent = [".".join(parts[:i]) for i in range(1, len(parts))][0]
+                    return LazyLoader(parent)
 
                 return self._lazy_modules[module_name]
 
@@ -93,6 +93,7 @@ class lazy:
     def __exit__(self, *args):
         """Restores the original import mechanism and updates sys.modules with any loaded lazy modules."""
         builtins.__import__ = self._original_import
+
 
 if __name__ == "__main__":
     import time
