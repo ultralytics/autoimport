@@ -37,9 +37,7 @@ class LazyLoader(types.ModuleType):
 
     def __repr__(self):
         """Returns a string representation of the LazyLoader module wrapper instance."""
-        # if self._module is not None:
-        #    return repr(self._module)  # Use the module's repr after loading
-        return f"<LazyLoader for '{self.__name__}'>"
+        return repr(self._module) if self._module is not None else f"<LazyLoader for '{self.__name__}'>"
 
 
 class lazy:
