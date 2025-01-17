@@ -22,6 +22,7 @@ class LazyLoader(types.ModuleType):
             self._loading = True  # Set loading flag
             try:
                 self._module = importlib.import_module(self.__name__)
+                self.__class__ = self._module.__class__  # Change the class to the actual module's class
             finally:
                 self._loading = False  # Reset loading flag
 
@@ -36,6 +37,8 @@ class LazyLoader(types.ModuleType):
 
     def __repr__(self):
         """Returns a string representation of the LazyLoader module wrapper instance."""
+        #if self._module is not None:
+        #    return repr(self._module)  # Use the module's repr after loading
         return f"<LazyLoader for '{self.__name__}'>"
 
 
