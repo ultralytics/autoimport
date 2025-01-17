@@ -9,7 +9,7 @@ import types
 class LazyLoader(types.ModuleType):
     """Lazy loading module wrapper."""
 
-    def __init__(self, name, globals, from_name=None):
+    def __init__(self, name, globals=None, from_name=None):
         """Initializes a lazy-loading module wrapper that defers actual module imports until first access."""
         super().__init__(name)
         self.__path__ = [name]  # Required for some packages to work correctly
