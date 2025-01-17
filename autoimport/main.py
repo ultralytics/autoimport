@@ -92,7 +92,7 @@ class lazy:
 if __name__ == "__main__":
     import time
 
-    # Context manager
+    # Context manager usage
     with lazy():
         t0 = time.perf_counter()
         import numpy as np
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     print(linalg.det(A))
     print(time.perf_counter() - t5)
 
-    # Direct usage of LayzLoader class
+    # Direct LayzLoader() usage
     t6 = time.perf_counter()
     seaborn_lazy = LazyLoader("seaborn")
     print(time.perf_counter() - t6)
