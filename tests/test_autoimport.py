@@ -12,7 +12,7 @@ class TestLazyImports(unittest.TestCase):
         with lazy():
             import numpy as np
         random_number = np.random.rand()
-        self.assertIsInstance(np, LazyLoader)
+        self.assertNotIsInstance(np, LazyLoader)
         self.assertLess(random_number, 1.0)
 
     def test_multiple_imports(self):
