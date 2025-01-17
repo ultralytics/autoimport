@@ -74,7 +74,7 @@ class lazy:
                 if "." in name: # we need to only return parent package
                    module_name = name.split('.')[0]
 
-                if globals is not None and module_name in globals:
+                if globals and module_name in globals:
                     self._lazy_modules[module_name] = globals[module_name]
                 elif module_name in sys.modules:
                     self._lazy_modules[module_name] =  sys.modules[module_name]  # module already loaded in session
