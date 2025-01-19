@@ -27,14 +27,14 @@ class LazyLoader(types.ModuleType):
                 for attr in ["__file__", "__path__", "__package__", "__spec__", "__class__"]:
                     if hasattr(self._module, attr):
                         setattr(self, attr, getattr(self._module, attr))
+                if self._globals.get(self._name, None) is self:
+                        self._globals[self._name] = self._module
             finally:
                 self._loading = False  # Reset loading flag
 
     def __getattr__(self, attr):
         """Lazily loads and returns module attributes when first accessed via attribute lookup."""
         self._load_module()
-        if self._globals.get(self._name, None) is self:
-            self._globals[self._name] = self._module
         return getattr(self._module, attr)
 
     def __dir__(self):
