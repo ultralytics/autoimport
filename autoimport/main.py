@@ -28,7 +28,7 @@ class LazyLoader(types.ModuleType):
                     if hasattr(self._module, attr):
                         setattr(self, attr, getattr(self._module, attr))
                 if self._globals.get(self._name, None) is self:
-                        self._globals[self._name] = self._module
+                    self._globals[self._name] = self._module
             finally:
                 self._loading = False  # Reset loading flag
 
