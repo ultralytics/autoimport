@@ -47,12 +47,12 @@ In this example, the `import torch` statement inside the `lazy()` context doesn'
 
 The repository is organized for clarity and ease of development:
 
--   `autoimport/`: Contains the source code of the `autoimport` package.
--   `tests/`: Unit tests to ensure code reliability using frameworks like [pytest](https://docs.pytest.org/en/stable/).
--   `pyproject.toml`: Project configuration following [PEP 621](https://peps.python.org/pep-0621/), including dependencies and packaging details.
--   `.gitignore`: Specifies files intentionally untracked by Git.
--   `LICENSE`: The open-source license for the project ([AGPL-3.0](https://opensource.org/license/agpl-v3)).
--   `.github/workflows/`: [GitHub Actions](https://docs.github.com/en/actions) workflows for Continuous Integration (CI) and Continuous Deployment (CD).
+- `autoimport/`: Contains the source code of the `autoimport` package.
+- `tests/`: Unit tests to ensure code reliability using frameworks like [pytest](https://docs.pytest.org/en/stable/).
+- `pyproject.toml`: Project configuration following [PEP 621](https://peps.python.org/pep-0621/), including dependencies and packaging details.
+- `.gitignore`: Specifies files intentionally untracked by Git.
+- `LICENSE`: The open-source license for the project ([AGPL-3.0](https://opensource.org/license/agpl-v3)).
+- `.github/workflows/`: [GitHub Actions](https://docs.github.com/en/actions) workflows for Continuous Integration (CI) and Continuous Deployment (CD).
 
 ```
 autoimport/
@@ -105,8 +105,8 @@ Ultralytics thrives on community contributions! We appreciate any help, from rep
 
 Ultralytics provides two licensing options to accommodate different use cases:
 
--   **AGPL-3.0 License**: This [OSI-approved](https://opensource.org/license) open-source license is ideal for students, enthusiasts, and researchers who wish to share their work openly. See the [LICENSE](https://github.com/ultralytics/autoimport/blob/main/LICENSE) file for full details.
--   **Enterprise License**: Designed for commercial use, this license allows for the integration of Ultralytics software and AI models into commercial products and services without the open-source requirements of AGPL-3.0. Please contact [Ultralytics Licensing](https://www.ultralytics.com/license) for more information.
+- **AGPL-3.0 License**: This [OSI-approved](https://opensource.org/license) open-source license is ideal for students, enthusiasts, and researchers who wish to share their work openly. See the [LICENSE](https://github.com/ultralytics/autoimport/blob/main/LICENSE) file for full details.
+- **Enterprise License**: Designed for commercial use, this license allows for the integration of Ultralytics software and AI models into commercial products and services without the open-source requirements of AGPL-3.0. Please contact [Ultralytics Licensing](https://www.ultralytics.com/license) for more information.
 
 ## 📮 Contact
 
