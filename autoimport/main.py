@@ -9,12 +9,14 @@ import types
 class LazyLoader(types.ModuleType):
     """Lazy loading module wrapper."""
 
-    def __init__(self, name):
+    def __init__(self, name, globals=None, from_name=None):
         """Initializes a lazy-loading module wrapper that defers actual module imports until first access."""
         super().__init__(name)
         self.__path__ = [name]  # Required for some packages to work correctly
+        self._globals = globals or {}
         self._module = None
         self._loading = False  # Flag to indicate if we are already loading
+        self._name = from_name or name
 
     def _load_module(self):
         """Loads and caches a module on first access using Python's importlib to enable lazy module importing."""
@@ -25,6 +27,8 @@ class LazyLoader(types.ModuleType):
                 for attr in ["__file__", "__path__", "__package__", "__spec__", "__class__"]:
                     if hasattr(self._module, attr):
                         setattr(self, attr, getattr(self._module, attr))
+                if self._globals.get(self._name, None) is self:
+                    self._globals[self._name] = self._module
             finally:
                 self._loading = False  # Reset loading flag
 
@@ -67,7 +71,7 @@ class lazy:
                 for from_item in fromlist:
                     full_name = f"{module_name}.{from_item}"
                     if full_name not in self._lazy_modules:
-                        self._lazy_modules[full_name] = LazyLoader(full_name)
+                        self._lazy_modules[full_name] = LazyLoader(full_name, globals, from_item)
 
                 # Return a proxy namespace to access LazyLoaders
                 return types.SimpleNamespace(
@@ -82,7 +86,7 @@ class lazy:
                 elif module_name in sys.modules:
                     self._lazy_modules[module_name] = sys.modules[module_name]  # module already loaded in session
                 elif module_name not in self._lazy_modules:
-                    self._lazy_modules[module_name] = LazyLoader(module_name)
+                    self._lazy_modules[module_name] = LazyLoader(module_name, globals)
 
                 return self._lazy_modules[module_name]
 
