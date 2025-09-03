@@ -15,7 +15,7 @@
 Install the `ultralytics-autoimport` package from [PyPI](https://pypi.org/project/ultralytics-autoimport/):
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
-[![Downloads](https://static.pepy.tech/badge/ultralytics-autoimport)](https://www.pepy.tech/projects/ultralytics-autoimport)
+[![Downloads](https://static.pepy.tech/badge/ultralytics-autoimport)](https://clickpy.clickhouse.com/dashboard/ultralytics-autoimport)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
 
 ```bash
