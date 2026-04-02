@@ -135,7 +135,7 @@ jobs:
           echo "PR_TITLE=${PR_TITLE}" >> "${GITHUB_ENV}"
       - name: Notify Success
         if: needs.publish.result == 'success' && github.event_name == 'push'
-        uses: slackapi/slack-github-action@v2.0.0
+        uses: slackapi/slack-github-action@v3.0.1
         with:
           webhook-type: incoming-webhook
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_YOLO }}
