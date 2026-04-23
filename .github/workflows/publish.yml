@@ -4,6 +4,10 @@
 
 name: Publish to PyPI
 
+permissions:
+  contents: read
+  pull-requests: read
+
 on:
   push:
     branches: [main]
