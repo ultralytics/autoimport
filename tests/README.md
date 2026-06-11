@@ -2,17 +2,17 @@
 
 # Tests Directory (`tests/`)
 
-Welcome to the `tests/` directory for this Ultralytics project. This directory is crucial for maintaining code quality and reliability through automated testing. We provide support for two popular Python testing frameworks: **pytest** and **unittest**.
+Welcome to the `tests/` directory for this Ultralytics project. This directory is crucial for maintaining code quality and reliability through automated testing. The test suite runs with Python's built-in **unittest** framework and can also be collected by **pytest** if you install it locally.
 
 ## 🧪 Overview
 
 -   **Purpose:** Contains all automated test scripts written in Python to verify the functionality of the project's codebase.
--   **Organization:** The structure mirrors the `src/` directory where possible, making it intuitive to locate tests corresponding to specific modules or features.
--   **Goal:** Ensure comprehensive test coverage, including unit tests, integration tests, and functional tests, covering a wide range of scenarios and edge cases. Good testing practices are fundamental to robust software development, as outlined in resources like [Real Python's guide to testing](https://realpython.com/python-testing/).
+-   **Organization:** The structure mirrors the `autoimport/` package where possible, making it intuitive to locate tests corresponding to specific modules or features.
+-   **Goal:** Cover the current lazy-import behavior and guard against regressions. Good testing practices are fundamental to robust software development, as outlined in resources like [Real Python's guide to testing](https://realpython.com/python-testing/).
 
 ## ▶️ Running Tests
 
-You can execute the test suite using either `pytest` or the built-in `unittest` module.
+You can execute the test suite using the built-in `unittest` module or, optionally, `pytest`.
 
 ### Option 1: Using `pytest` (Recommended)
 
@@ -28,7 +28,7 @@ You can execute the test suite using either `pytest` or the built-in `unittest` 
     python -m pytest tests -v
 
     # Run tests and generate a coverage report
-    python -m pytest --cov=src tests -v
+    python -m pytest --cov=autoimport tests -v
     ```
 
 ### Option 2: Using `unittest` (Built-in)
@@ -42,9 +42,9 @@ If you prefer to avoid installing external dependencies for basic testing, you c
 
 ### Notes
 
--   **Recommendation:** We generally recommend `pytest` due to its powerful features like fixtures, parameterized testing, and extensive plugin ecosystem, which often lead to more readable and maintainable tests.
--   **Simplicity:** `unittest` is readily available in any standard Python installation, making it a straightforward option if external dependencies are a concern.
--   **CI Integration:** These tests are typically integrated into [Continuous Integration (CI)](https://github.com/features/actions) pipelines to automatically validate changes before they are merged, ensuring project stability. See the [Ultralytics contributing guide](https://docs.ultralytics.com/help/contributing/) for more details on our development process.
+-   **CI parity:** The repository CI runs `python -m unittest discover tests -v`, so use this command before opening a pull request.
+-   **Optional tooling:** `pytest` adds useful features such as fixtures, parameterized testing, and coverage plugins when you want them locally.
+-   **CI Integration:** These tests are integrated into [Continuous Integration (CI)](https://github.com/features/actions) pipelines to automatically validate changes before they are merged, ensuring project stability. See the [Ultralytics contributing guide](https://docs.ultralytics.com/help/contributing/) for more details on our development process.
 
 Regularly running these tests is essential for maintaining the high quality and reliability expected of [Ultralytics](https://www.ultralytics.com/) projects.
 
