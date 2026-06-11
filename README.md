@@ -41,14 +41,14 @@ torch.cuda.is_available()
 print(f"First use time: {time.perf_counter() - t1:.3f}s")  # Example output: 0.462s
 ```
 
-In this example, the `import torch` statement inside the `lazy()` context doesn't immediately load the [PyTorch](https://pytorch.org/) library. The actual import happens only when `torch.cuda.is_available()` is called, demonstrating the deferred loading mechanism.
+In this example, when [PyTorch](https://pytorch.org/) is installed, the `import torch` statement inside the `lazy()` context doesn't immediately load the library. The actual import happens only when `torch.cuda.is_available()` is called, demonstrating the deferred loading mechanism.
 
 ## 🗂 Repository Structure
 
 The repository is organized for clarity and ease of development:
 
 - `autoimport/`: Contains the source code of the `autoimport` package.
-- `tests/`: Unit tests to ensure code reliability using frameworks like [pytest](https://docs.pytest.org/en/stable/).
+- `tests/`: Unit tests to ensure code reliability using Python's [unittest](https://docs.python.org/3/library/unittest.html) framework.
 - `pyproject.toml`: Project configuration following [PEP 621](https://peps.python.org/pep-0621/), including dependencies and packaging details.
 - `.gitignore`: Specifies files intentionally untracked by Git.
 - `LICENSE`: The open-source license for the project ([AGPL-3.0](https://opensource.org/license/agpl-v3)).
