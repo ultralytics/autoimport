@@ -51,7 +51,7 @@ The repository is organized for clarity and ease of development:
 - `tests/`: Unit tests to ensure code reliability using Python's [unittest](https://docs.python.org/3/library/unittest.html) framework.
 - `pyproject.toml`: Project configuration following [PEP 621](https://peps.python.org/pep-0621/), including dependencies and packaging details.
 - `.gitignore`: Specifies files intentionally untracked by Git.
-- `LICENSE`: The open-source license for the project ([AGPL-3.0](https://opensource.org/license/agpl-v3)).
+- `LICENSE`: The open-source license for the project ([AGPL-3.0](https://opensource.org/license/agpl-3.0)).
 - `.github/workflows/`: [GitHub Actions](https://docs.github.com/en/actions) workflows for Continuous Integration (CI) and Continuous Deployment (CD).
 
 ```
@@ -97,7 +97,7 @@ To use it as a template:
 
 ## 💡 Contribute
 
-Ultralytics thrives on community contributions! We appreciate any help, from reporting bugs to submitting pull requests. Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing/) for more details on how to get involved. You can also share your feedback through our quick [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). Thank you 🙏 to all our contributors!
+Ultralytics thrives on community contributions! We appreciate any help, from reporting bugs to submitting pull requests. Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing) for more details on how to get involved. You can also share your feedback through our quick [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). Thank you 🙏 to all our contributors!
 
 [![Ultralytics open-source contributors](https://raw.githubusercontent.com/ultralytics/assets/main/im/image-contributors.png)](https://github.com/ultralytics/autoimport/graphs/contributors)
 

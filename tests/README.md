@@ -44,7 +44,7 @@ If you prefer to avoid installing external dependencies for basic testing, you c
 
 -   **CI parity:** The repository CI runs `python -m unittest discover tests -v`, so use this command before opening a pull request.
 -   **Optional tooling:** `pytest` adds useful features such as fixtures, parameterized testing, and coverage plugins when you want them locally.
--   **CI Integration:** These tests are integrated into [Continuous Integration (CI)](https://github.com/features/actions) pipelines to automatically validate changes before they are merged, ensuring project stability. See the [Ultralytics contributing guide](https://docs.ultralytics.com/help/contributing/) for more details on our development process.
+-   **CI Integration:** These tests are integrated into [Continuous Integration (CI)](https://github.com/features/actions) pipelines to automatically validate changes before they are merged, ensuring project stability. See the [Ultralytics contributing guide](https://docs.ultralytics.com/help/contributing) for more details on our development process.
 
 Regularly running these tests is essential for maintaining the high quality and reliability expected of [Ultralytics](https://www.ultralytics.com/) projects.
 
