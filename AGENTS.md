@@ -60,4 +60,4 @@ ruff format . && ruff check --fix .
 - Use Google-style docstrings and keep lines within the Ruff-configured 120-character limit.
 - Preserve compatibility across Python 3.8 through 3.14: do not introduce syntax or standard-library APIs outside that range.
 - Keep the public API in `autoimport/__init__.py` deliberate and minimal. Adding or renaming an exported symbol requires updating `__all__` and validating import behavior.
-- Releases are version-driven: bump `__version__` in `autoimport/__init__.py`; a push to `main` triggers `publish.yml`, which tags and publishes a newer version to PyPI.
+- Releases are version-driven: bump `__version__` in `autoimport/__init__.py`; pushes to `main` by @glenn-jocher run `publish.yml`, which tags and publishes only when that version is newer than PyPI.
