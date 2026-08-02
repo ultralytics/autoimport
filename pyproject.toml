@@ -26,7 +26,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ultralytics-autoimport"  # Required
 dynamic = ["version"]
-description = "Ultralytics autoimport Python Package"  # Optional
+description = "Explicit lazy module imports for Python"  # Optional
 readme = "README.md"  # Optional
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
@@ -62,12 +62,6 @@ classifiers = [# Optional, for a list of valid classifiers, see https://pypi.org
 
 # Required dependencies ------------------------------------------------------------------------------------------------
 dependencies = []
-
-# Optional dependencies ------------------------------------------------------------------------------------------------
-[project.optional-dependencies]
-dev = [
-    "numpy",  # for tests
-]
 
 [project.urls]  # Optional
 "Homepage" = "https://ultralytics.com"

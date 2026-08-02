@@ -2,7 +2,7 @@
 
 This file provides guidance to AI coding agents (Claude Code, etc.) when working with code in this repository. CLAUDE.md is a symlink to this file.
 
-Autoimport (`ultralytics-autoimport` on PyPI, AGPL-3.0) is a lightweight Python package for deferring imports until first use through the `lazy` context manager and `LazyLoader` module proxy. Supported Python versions are 3.8 through 3.14.
+Autoimport (`ultralytics-autoimport` on PyPI, AGPL-3.0) is a lightweight Python package for deferring module execution until first attribute access through the explicit `lazy_import()` function and Python's standard `importlib` loader protocol. Supported Python versions are 3.8 through 3.14.
 
 ## Core Principles (CRITICAL)
 
@@ -32,7 +32,7 @@ After opening a PR:
 
 ```bash
 # Development install
-uv pip install -e ".[dev]"
+uv pip install -e .
 
 # Full test suite (matches ci.yml)
 python -m unittest discover tests -v
@@ -49,8 +49,8 @@ ruff format . && ruff check --fix .
 
 ## Architecture
 
-- `autoimport/main.py` owns all lazy-import behavior. `lazy` temporarily replaces `builtins.__import__`, and `LazyLoader` imports and caches the real module on first attribute access.
-- `autoimport/__init__.py` defines the public API (`LazyLoader`, `lazy`) and package version.
+- `autoimport/main.py` owns `lazy_import()`, which discovers a module, registers its canonical module object in `sys.modules`, and defers its loader behind a thread-safe module type that supports retry after failed execution.
+- `autoimport/__init__.py` defines the public API (`lazy_import`) and package version.
 - `tests/test_autoimport.py` covers lazy import behavior with the standard-library `unittest` framework.
 - `.github/workflows/` owns CI, formatting, CLA checks, and PyPI publication.
 
@@ -59,5 +59,5 @@ ruff format . && ruff check --fix .
 - Every Python and workflow file starts with `# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license`; Ultralytics Actions adds headers automatically, so do not add or revert them manually.
 - Use Google-style docstrings and keep lines within the Ruff-configured 120-character limit.
 - Preserve compatibility across Python 3.8 through 3.14: do not introduce syntax or standard-library APIs outside that range.
-- Keep the public API in `autoimport/__init__.py` deliberate and minimal. Adding or renaming an exported symbol requires updating `__all__` and validating import behavior.
+- Keep the public API in `autoimport/__init__.py` deliberate and minimal. `lazy_import()` supports modules only; do not add transparent proxies for classes, functions, constants, or `from ... import ...` semantics.
 - Releases are version-driven: bump `__version__` in `autoimport/__init__.py`; pushes to `main` by @glenn-jocher run `publish.yml`, which tags and publishes only when that version is newer than PyPI.
