@@ -92,6 +92,25 @@ class TestLazyImport(unittest.TestCase):
         self.assertEqual(module.VALUE, 5)
         self.assertFalse(hasattr(module, "REMOVE"))
 
+    def test_module_substitution_failure_does_not_retry(self):
+        """Do not rerun a successfully executed body when it substitutes its canonical module object."""
+        marker = self.path / "substitution-loads"
+        self.write_module(
+            "substituting_module",
+            f"from pathlib import Path\n"
+            f"import sys\n"
+            f"marker = Path({str(marker)!r})\n"
+            f"marker.write_text(str(int(marker.read_text()) + 1 if marker.exists() else 1))\n"
+            f"VALUE = 9\n"
+            f"sys.modules[__name__] = object()\n",
+        )
+        module = lazy_import("substituting_module")
+
+        with self.assertRaisesRegex(ValueError, "substituted in sys.modules"):
+            module.VALUE
+        self.assertEqual(module.VALUE, 9)
+        self.assertEqual(marker.read_text(), "1")
+
     def test_first_access_is_thread_safe(self):
         """Execute the module body once when multiple threads make the first access concurrently."""
         marker = self.path / "thread-loads"
@@ -190,6 +209,27 @@ class TestLazyImport(unittest.TestCase):
         self.assertFalse(marker.exists())
         self.assertEqual(module.VALUE, 3)
         self.assertTrue(marker.exists())
+
+    def test_dotted_module_reuses_child_imported_by_parent(self):
+        """Reuse a child eagerly imported while discovering its parent instead of executing it twice."""
+        package = self.path / "eager_parent"
+        package.mkdir()
+        marker = self.path / "eager-child-loads"
+        (package / "__init__.py").write_text("from . import child\n")
+        (package / "child.py").write_text(
+            f"from pathlib import Path\n"
+            f"marker = Path({str(marker)!r})\n"
+            f"marker.write_text(str(int(marker.read_text()) + 1 if marker.exists() else 1))\n"
+            f"VALUE = 10\n"
+        )
+        self.module_names.extend(("eager_parent.child", "eager_parent"))
+
+        module = lazy_import("eager_parent.child")
+
+        self.assertIs(module, sys.modules["eager_parent.child"])
+        self.assertIs(module, sys.modules["eager_parent"].child)
+        self.assertEqual(module.VALUE, 10)
+        self.assertEqual(marker.read_text(), "1")
 
 
 if __name__ == "__main__":

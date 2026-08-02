@@ -32,8 +32,6 @@ class _LazyModule(ModuleType):
                 }
                 try:
                     spec.loader.exec_module(self)
-                    if spec.name in sys.modules and sys.modules[spec.name] is not self:
-                        raise ValueError(f"module object for {spec.name!r} substituted in sys.modules during lazy load")
                 except BaseException:
                     namespace.clear()
                     namespace.update(initial)
@@ -45,6 +43,8 @@ class _LazyModule(ModuleType):
                     namespace.update(updated)
                     if object.__getattribute__(self, "__class__") is _LazyModule:
                         object.__setattr__(self, "__class__", original_class)
+                    if spec.name in sys.modules and sys.modules[spec.name] is not self:
+                        raise ValueError(f"module object for {spec.name!r} substituted in sys.modules during lazy load")
                 finally:
                     state["is_loading"] = False
 
@@ -96,6 +96,11 @@ def lazy_import(name: str) -> ModuleType:
             return module
 
         spec = importlib.util.find_spec(name)
+        if name in sys.modules:  # Finding a dotted name may import its parent and the requested child.
+            module = sys.modules[name]
+            if module is None:
+                raise ModuleNotFoundError(f"import of {name!r} halted; None in sys.modules", name=name)
+            return module
         if spec is None:
             raise ModuleNotFoundError(f"No module named {name!r}", name=name)
         if spec.loader is None:  # Namespace packages have no module body to defer.

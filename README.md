@@ -68,6 +68,11 @@ Deferring a module also defers its import-time side effects and any exception ra
 effects or errors occur on first attribute access instead of at the assignment. If code immediately accesses the module
 after `lazy_import()`, there is no startup benefit.
 
+First execution of lazy module bodies is serialized process-wide. This prevents two lazy modules from deadlocking each
+other during concurrent circular initialization, but it also means unrelated first accesses cannot initialize in
+parallel. Module bodies run while that shared reentrant lock is held, so applications should avoid coordinating lazy
+first access with other threads during import-time synchronization.
+
 The discovered loader must support `exec_module()`, and its module object must permit `__class__` reassignment. These are
 the same compatibility requirements as Python's `importlib.util.LazyLoader`; incompatible custom loaders fail during
 `lazy_import()` instead of returning a partial proxy.
