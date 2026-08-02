@@ -1,135 +1,116 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 
-import builtins
 import importlib
+import importlib.util
 import sys
-import types
+from types import ModuleType
 
 
-class LazyLoader(types.ModuleType):
-    """Lazy loading module wrapper."""
+class _LazyModule(ModuleType):
+    """Module type that executes its loader once on first attribute access."""
 
-    def __init__(self, name):
-        """Initializes a lazy-loading module wrapper that defers actual module imports until first access."""
-        super().__init__(name)
-        self.__path__ = [name]  # Required for some packages to work correctly
-        self._module = None
-        self._loading = False  # Flag to indicate if we are already loading
+    def __getattribute__(self, attr):
+        """Load the module before returning an attribute."""
+        spec = object.__getattribute__(self, "__spec__")
+        state = spec.loader_state
+        with state["lock"]:
+            if object.__getattribute__(self, "__class__") is _LazyModule:
+                original_class = state["__class__"]
+                if state["is_loading"]:
+                    return original_class.__getattribute__(self, attr)
 
-    def _load_module(self):
-        """Loads and caches a module on first access using Python's importlib to enable lazy module importing."""
-        if self._module is None and not self._loading:
-            self._loading = True  # Set loading flag
-            try:
-                self._module = importlib.import_module(self.__name__)
-                for attr in ["__file__", "__path__", "__package__", "__spec__", "__class__"]:
-                    if hasattr(self._module, attr):
-                        setattr(self, attr, getattr(self._module, attr))
-            finally:
-                self._loading = False  # Reset loading flag
+                state["is_loading"] = True
+                namespace = original_class.__getattribute__(self, "__dict__")
+                initial = state["__dict__"]
+                updated = {
+                    key: value
+                    for key, value in namespace.items()
+                    if key not in initial or id(value) != id(initial[key])
+                }
+                try:
+                    spec.loader.exec_module(self)
+                    if spec.name in sys.modules and sys.modules[spec.name] is not self:
+                        raise ValueError(f"module object for {spec.name!r} substituted in sys.modules during lazy load")
+                except BaseException:
+                    namespace.clear()
+                    namespace.update(initial)
+                    namespace.update(updated)
+                    if object.__getattribute__(self, "__class__") is not _LazyModule:
+                        object.__setattr__(self, "__class__", _LazyModule)
+                    raise
+                else:
+                    namespace.update(updated)
+                    if object.__getattribute__(self, "__class__") is _LazyModule:
+                        object.__setattr__(self, "__class__", original_class)
+                finally:
+                    state["is_loading"] = False
 
-    def __getattr__(self, attr):
-        """Lazily loads and returns module attributes when first accessed via attribute lookup."""
-        self._load_module()
-        return getattr(self._module, attr)
+        return getattr(self, attr)
 
-    def __dir__(self):
-        """Returns default dir() for unloaded modules or the module if already loaded."""
-        return dir(self._module) if self._module is not None else super().__dir__()
-
-    def __repr__(self):
-        """Returns a string representation of the LazyLoader module wrapper instance."""
-        return repr(self._module) if self._module is not None else f"<LazyLoader for '{self.__name__}'>"
-
-
-class lazy:
-    """Context manager for lazy imports."""
-
-    def __init__(self):
-        """Initializes a context manager for lazy module imports to optimize startup time and memory usage."""
-        self._original_import = builtins.__import__
-        self._lazy_modules = {}  # Store lazy modules here
-
-    def __enter__(self):
-        """Enters a context where imports are lazy-loaded, replacing Python's default import mechanism."""
-
-        def lazy_import(name, globals=None, locals=None, fromlist=(), level=0):
-            module_name = name
-            if level > 0:
-                # Calculate absolute name for relative imports
-                package = globals["__package__"]
-                for _ in range(level - 1):
-                    package = package.rpartition(".")[0]
-                module_name = f"{package}.{name}" if package else name
-
-            if fromlist:
-                # Handle 'from x import y'
-                for from_item in fromlist:
-                    full_name = f"{module_name}.{from_item}"
-                    if full_name not in self._lazy_modules:
-                        self._lazy_modules[full_name] = LazyLoader(full_name)
-
-                # Return a proxy namespace to access LazyLoaders
-                return types.SimpleNamespace(
-                    **{from_item: self._lazy_modules[f"{module_name}.{from_item}"] for from_item in fromlist}
-                )
-            else:
-                if "." in name:  # we need to only return parent package
-                    module_name = name.split(".")[0]
-
-                if globals and module_name in globals:
-                    self._lazy_modules[module_name] = globals[module_name]
-                elif module_name in sys.modules:
-                    self._lazy_modules[module_name] = sys.modules[module_name]  # module already loaded in session
-                elif module_name not in self._lazy_modules:
-                    self._lazy_modules[module_name] = LazyLoader(module_name)
-
-                return self._lazy_modules[module_name]
-
-        builtins.__import__ = lazy_import
-
-    def __exit__(self, *args):
-        """Restores the original import mechanism and updates sys.modules with any loaded lazy modules."""
-        builtins.__import__ = self._original_import
+    def __delattr__(self, attr):
+        """Load before deletion while allowing module code to delete its own attributes."""
+        spec = object.__getattribute__(self, "__spec__")
+        state = spec.loader_state
+        with state["lock"]:
+            if state["is_loading"]:
+                return state["__class__"].__delattr__(self, attr)
+            self.__getattribute__(attr)
+            return state["__class__"].__delattr__(self, attr)
 
 
-if __name__ == "__main__":
-    import time
+class _LazyLoader(importlib.util.LazyLoader):
+    """Configure modules for thread-safe, retryable lazy execution."""
 
-    # Context manager usage
-    with lazy():
-        t0 = time.perf_counter()
-        import numpy as np
-        import seaborn
-        import torch
-        from numpy import linalg
-        from torch import cuda, nn
+    def exec_module(self, module):
+        """Store eager-loader state and defer execution of the module body."""
+        from threading import RLock
 
-        print(time.perf_counter() - t0)
+        module.__spec__.loader = self.loader
+        module.__loader__ = self.loader
+        module.__spec__.loader_state = {
+            "__dict__": module.__dict__.copy(),
+            "__class__": module.__class__,
+            "is_loading": False,
+            "lock": RLock(),
+        }
+        module.__class__ = _LazyModule
 
-    t1 = time.perf_counter()
-    print(cuda.is_available())
-    print(time.perf_counter() - t1)
 
-    t2 = time.perf_counter()
-    print(torch.cuda.is_available())
-    print(time.perf_counter() - t2)
+def lazy_import(name: str) -> ModuleType:
+    """Return a module whose execution is deferred until its first attribute access.
 
-    t3 = time.perf_counter()
-    net = nn.Linear(10, 2)
-    print(net)
-    print(time.perf_counter() - t3)
+    Module discovery happens immediately, so an invalid name raises ``ModuleNotFoundError`` at this call. If the module
+    is already present in ``sys.modules``, that existing module is returned unchanged.
 
-    t5 = time.perf_counter()
-    A = np.array([[1, 2], [3, 4]])
-    print(linalg.det(A))
-    print(time.perf_counter() - t5)
+    Args:
+        name (str): Fully qualified module name, such as ``"torch"`` or ``"numpy.linalg"``.
 
-    # Direct LayzLoader() usage
-    t6 = time.perf_counter()
-    seaborn_lazy = LazyLoader("seaborn")
-    print(time.perf_counter() - t6)
+    Returns:
+        (ModuleType): Module object registered in ``sys.modules`` and configured for lazy execution.
+    """
+    if name in sys.modules:
+        module = sys.modules[name]
+        if module is None:
+            raise ModuleNotFoundError(f"import of {name!r} halted; None in sys.modules", name=name)
+        return module
 
-    t7 = time.perf_counter()
-    print(seaborn.colors.crayons)
-    print(time.perf_counter() - t7)
+    spec = importlib.util.find_spec(name)
+    if spec is None:
+        raise ModuleNotFoundError(f"No module named {name!r}", name=name)
+    if spec.loader is None:  # Namespace packages have no module body to defer.
+        return importlib.import_module(name)
+
+    loader = _LazyLoader(spec.loader)
+    spec.loader = loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    try:
+        loader.exec_module(module)
+    except BaseException:
+        if sys.modules.get(name) is module:
+            del sys.modules[name]
+        raise
+    if "." in name:
+        parent_name, _, child_name = name.rpartition(".")
+        setattr(sys.modules[parent_name], child_name, module)
+    return module

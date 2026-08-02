@@ -1,130 +1,118 @@
 <a href="https://www.ultralytics.com/"><img src="https://raw.githubusercontent.com/ultralytics/assets/main/logo/Ultralytics_Logotype_Original.svg" width="320" alt="Ultralytics logo"></a>
 
-# ⚡️ `autoimport`: Effortless Lazy Imports in Python
+# ⚡️ `autoimport`: Explicit Lazy Module Imports
 
-`autoimport` is a lightweight Python package providing effortless **lazy imports**. By using the `lazy` context manager, modules are imported only when they are actually accessed, improving application startup times and reducing the initial memory footprint. This is ideal for projects with heavy dependencies that are not always needed immediately. The `ultralytics-autoimport` package is published on [PyPI](https://pypi.org/project/ultralytics-autoimport/) for easy installation.
+`autoimport` defers execution of a Python module until its first attribute access. It builds on Python's standard
+[`importlib` loader protocol](https://docs.python.org/3/library/importlib.html), preserving the canonical module object
+and its identity in `sys.modules`.
+
+The `ultralytics-autoimport` package supports Python 3.8 through 3.14.
 
 [![autoimport CI](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml)
 [![Ultralytics Actions](https://github.com/ultralytics/autoimport/actions/workflows/format.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/format.yml)
-[![Ultralytics Discord](https://img.shields.io/discord/1089800235347353640?logo=discord&logoColor=white&label=Discord&color=blue)](https://discord.com/invite/ultralytics)
-[![Ultralytics Forums](https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue)](https://community.ultralytics.com/)
-[![Ultralytics Reddit](https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue)](https://reddit.com/r/ultralytics)
-
-## 🚀 Quick Start
-
-Install the `ultralytics-autoimport` package from [PyPI](https://pypi.org/project/ultralytics-autoimport/):
-
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
 [![Downloads](https://static.pepy.tech/badge/ultralytics-autoimport)](https://clickpy.clickhouse.com/dashboard/ultralytics-autoimport)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-autoimport.svg)](https://pypi.org/project/ultralytics-autoimport/)
+
+## Installation
 
 ```bash
 pip install ultralytics-autoimport
 ```
 
-Use the `lazy` context manager to defer imports according to standard [Python import mechanics](https://docs.python.org/3/reference/import.html):
+## Usage
+
+Replace a module import with an explicit lazy assignment:
 
 ```python
 import time
 
-from autoimport import lazy
+from autoimport import lazy_import
 
-with lazy():
-    t0 = time.perf_counter()
-    import torch  # Import is deferred until first use
-
-    print(f"Initial import time: {time.perf_counter() - t0:.3f}s")  # Example output: 0.000s
+t0 = time.perf_counter()
+torch = lazy_import("torch")  # Finds torch now, but does not execute torch/__init__.py yet
+print(f"Setup: {time.perf_counter() - t0:.3f}s")
 
 t1 = time.perf_counter()
-# The package is actually loaded here when torch.cuda is accessed
-torch.cuda.is_available()
-print(f"First use time: {time.perf_counter() - t1:.3f}s")  # Example output: 0.462s
+torch.cuda.is_available()  # First attribute access executes and initializes torch
+print(f"First use: {time.perf_counter() - t1:.3f}s")
+
+torch.tensor([1, 2, 3])  # Later attributes use the fully initialized module normally
 ```
 
-In this example, when [PyTorch](https://pytorch.org/) is installed, the `import torch` statement inside the `lazy()` context doesn't immediately load the library. The actual import happens only when `torch.cuda.is_available()` is called, demonstrating the deferred loading mechanism.
+Aliases and dotted modules are explicit strings:
 
-## 🗂 Repository Structure
-
-The repository is organized for clarity and ease of development:
-
-- `autoimport/`: Contains the source code of the `autoimport` package.
-- `tests/`: Unit tests to ensure code reliability using Python's [unittest](https://docs.python.org/3/library/unittest.html) framework.
-- `pyproject.toml`: Project configuration following [PEP 621](https://peps.python.org/pep-0621/), including dependencies and packaging details.
-- `.gitignore`: Specifies files intentionally untracked by Git.
-- `LICENSE`: The open-source license for the project ([AGPL-3.0](https://opensource.org/license/agpl-3.0)).
-- `.github/workflows/`: [GitHub Actions](https://docs.github.com/en/actions) workflows for Continuous Integration (CI) and Continuous Deployment (CD).
-
-```
-autoimport/
-│
-├── autoimport/           # Package source code
-│   ├── __init__.py
-│   └── ...
-│
-├── tests/                # Unit tests
-│   ├── __init__.py
-│   ├── test_autoimport.py
-│   └── ...
-│
-├── pyproject.toml        # Project configuration
-├── .gitignore            # Git ignore rules
-├── LICENSE               # AGPL-3.0 License file
-├── README.md             # This file
-└── .github/workflows/    # GitHub Actions CI/CD workflows
-    ├── ci.yml
-    └── format.yml
+```python
+np = lazy_import("numpy")
+linalg = lazy_import("numpy.linalg")
 ```
 
-### 📂 Source Code in `autoimport/` Directory
+If the requested module is already imported, `lazy_import()` returns the existing object unchanged. Module discovery
+happens immediately, so a misspelled or unavailable module raises `ModuleNotFoundError` at the `lazy_import()` call.
+For dotted names, Python may import parent packages while finding the requested child module.
 
-The `autoimport/` directory contains the core Python code for the `autoimport` package.
+## Scope and Limitations
 
-### 🧪 Testing with the `tests/` Directory
+`lazy_import()` deliberately supports modules only. It does not emulate arbitrary `from ... import ...` bindings:
 
-The `tests/` directory includes tests designed to maintain code quality and prevent regressions during development.
+```python
+# Supported
+pathlib = lazy_import("pathlib")
+path = pathlib.Path("models")
 
-## ➕ Starting a New Project
+# Not provided: transparent lazy classes, functions, or constants
+# Path = lazy_import("pathlib.Path")
+```
 
-This repository can also serve as a template for new Python projects at [Ultralytics](https://www.ultralytics.com/).
+Deferring a module also defers its import-time side effects and any exception raised while executing its body. Those
+effects or errors occur on first attribute access instead of at the assignment. If code immediately accesses the module
+after `lazy_import()`, there is no startup benefit.
 
-To use it as a template:
+The discovered loader must support `exec_module()`, and its module object must permit `__class__` reassignment. These are
+the same compatibility requirements as Python's `importlib.util.LazyLoader`; incompatible custom loaders fail during
+`lazy_import()` instead of returning a partial proxy.
 
-1.  **Create a New Repository:** Use this repository as a template to generate a new one for your project.
-2.  **Customize:** Modify `pyproject.toml`, `.pre-commit-config.yaml` (if using [pre-commit](https://pre-commit.com/)), and GitHub workflow YAML files as needed for your specific project requirements.
-3.  **Develop:** Add your source code to a new directory (e.g., `your_package_name/`) and corresponding tests to the `tests/` directory.
-4.  **Document:** Update the README.md file and add any necessary documentation within the [Ultralytics Docs](https://docs.ultralytics.com/).
-5.  **CI/CD:** Utilize the pre-configured [GitHub Actions](https://docs.github.com/en/actions) for automated testing and formatting checks.
+Versions before 0.1.0 exposed a `with lazy():` context manager that replaced `builtins.__import__`. That design could not
+preserve normal Python behavior for aliases, function-local imports, dotted imports, or objects imported with
+`from ... import ...`, and it affected imports in every thread. Replace it with explicit module assignments.
 
-## 💡 Contribute
+## Python 3.15 and PEP 810
 
-Ultralytics thrives on community contributions! We appreciate any help, from reporting bugs to submitting pull requests. Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing) for more details on how to get involved. You can also share your feedback through our quick [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). Thank you 🙏 to all our contributors!
+Python 3.15 adds native lazy imports through accepted
+[PEP 810](https://peps.python.org/pep-0810/). Its interpreter-supported syntax can lazily bind both modules and imported
+attributes:
 
-[![Ultralytics open-source contributors](https://raw.githubusercontent.com/ultralytics/assets/main/im/image-contributors.png)](https://github.com/ultralytics/autoimport/graphs/contributors)
+```python
+lazy import torch
+lazy from pathlib import Path
+```
 
-## 📄 License
+PEP 810 also provides a migration form that keeps ordinary import statements:
 
-Ultralytics provides two licensing options to accommodate different use cases:
+```python
+__lazy_modules__ = {"numpy", "torch"}
 
-- **AGPL-3.0 License**: This [OSI-approved](https://opensource.org/license) open-source license is ideal for students, enthusiasts, and researchers who wish to share their work openly. See the [LICENSE](https://github.com/ultralytics/autoimport/blob/main/LICENSE) file for full details.
-- **Enterprise License**: Designed for commercial use, this license allows for the integration of Ultralytics software and AI models into commercial products and services without the open-source requirements of AGPL-3.0. Please contact [Ultralytics Licensing](https://www.ultralytics.com/license) for more information.
+import numpy as np
+import torch
+```
 
-## 📮 Contact
+On Python 3.15, the listed imports are lazy. Earlier Python versions ignore `__lazy_modules__` and import them eagerly,
+which lets libraries adopt the declaration before dropping older versions. Native lazy imports are the preferred
+long-term solution because the interpreter can replace a lazy binding with any real module, class, function, or constant
+before Python code uses it. `autoimport` remains a narrow module-only option for Python 3.8 through 3.14.
 
-For bug reports, feature requests, or questions, please open a [GitHub Issue](https://github.com/ultralytics/autoimport/issues). For community support and discussions, join our [Discord](https://discord.com/invite/ultralytics) server!
+## Development
 
-<br>
-<div align="center">
-  <a href="https://github.com/ultralytics"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-github.png" width="3%" alt="Ultralytics GitHub"></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="space">
-  <a href="https://www.linkedin.com/company/ultralytics/"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-linkedin.png" width="3%" alt="Ultralytics LinkedIn"></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="space">
-  <a href="https://twitter.com/ultralytics"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-twitter.png" width="3%" alt="Ultralytics Twitter"></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="space">
-  <a href="https://youtube.com/ultralytics?sub_confirmation=1"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-youtube.png" width="3%" alt="Ultralytics YouTube"></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="space">
-  <a href="https://www.tiktok.com/@ultralytics"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-tiktok.png" width="3%" alt="Ultralytics TikTok"></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="space">
-  <a href="https://ultralytics.com/bilibili"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-bilibili.png" width="3%" alt="Ultralytics BiliBili"></a>
-  <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="3%" alt="space">
-  <a href="https://discord.com/invite/ultralytics"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-discord.png" width="3%" alt="Ultralytics Discord"></a>
-</div>
+```bash
+uv pip install -e .
+python -m unittest discover tests -v
+ruff format .
+ruff check .
+```
+
+## License
+
+Ultralytics offers AGPL-3.0 and Enterprise licenses. See [LICENSE](LICENSE) and the
+[Ultralytics licensing page](https://www.ultralytics.com/license).
+
+For bug reports and feature requests, open a [GitHub issue](https://github.com/ultralytics/autoimport/issues).
