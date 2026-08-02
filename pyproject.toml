@@ -73,7 +73,6 @@ dependencies = []
 # Tools settings -------------------------------------------------------------------------------------------------------
 [tool.setuptools]
 packages = ["autoimport"]
-package-data = { "autoimport" = ["*.yaml"] }
 
 [tool.setuptools.dynamic]
 version = { attr = "autoimport.__version__" }
@@ -91,7 +90,3 @@ wrap-descriptions = 120
 in-place = true
 pre-summary-newline = true
 close-quotes-on-newline = true
-
-[tool.codespell]
-ignore-words-list = "crate,nd,strack,dota,ane,segway,fo,gool,winn,commend"
-skip = '*.csv,*venv*,docs/??/,docs/mkdocs_??.yml'
