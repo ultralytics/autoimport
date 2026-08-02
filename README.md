@@ -83,17 +83,15 @@ Python 3.15 adds native lazy imports through accepted
 attributes:
 
 ```python
-lazy import torch
 lazy from pathlib import Path
+
+lazy import torch
 ```
 
 PEP 810 also provides a migration form that keeps ordinary import statements:
 
 ```python
 __lazy_modules__ = {"numpy", "torch"}
-
-import numpy as np
-import torch
 ```
 
 On Python 3.15, the listed imports are lazy. Earlier Python versions ignore `__lazy_modules__` and import them eagerly,
