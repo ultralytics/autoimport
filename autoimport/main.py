@@ -3,7 +3,10 @@
 import importlib
 import importlib.util
 import sys
+from threading import RLock
 from types import ModuleType
+
+_LOCK = RLock()
 
 
 class _LazyModule(ModuleType):
@@ -13,7 +16,7 @@ class _LazyModule(ModuleType):
         """Load the module before returning an attribute."""
         spec = object.__getattribute__(self, "__spec__")
         state = spec.loader_state
-        with state["lock"]:
+        with _LOCK:
             if object.__getattribute__(self, "__class__") is _LazyModule:
                 original_class = state["__class__"]
                 if state["is_loading"]:
@@ -51,7 +54,7 @@ class _LazyModule(ModuleType):
         """Load before deletion while allowing module code to delete its own attributes."""
         spec = object.__getattribute__(self, "__spec__")
         state = spec.loader_state
-        with state["lock"]:
+        with _LOCK:
             if state["is_loading"]:
                 return state["__class__"].__delattr__(self, attr)
             self.__getattribute__(attr)
@@ -63,15 +66,12 @@ class _LazyLoader(importlib.util.LazyLoader):
 
     def exec_module(self, module):
         """Store eager-loader state and defer execution of the module body."""
-        from threading import RLock
-
         module.__spec__.loader = self.loader
         module.__loader__ = self.loader
         module.__spec__.loader_state = {
             "__dict__": module.__dict__.copy(),
             "__class__": module.__class__,
             "is_loading": False,
-            "lock": RLock(),
         }
         module.__class__ = _LazyModule
 
@@ -88,29 +88,25 @@ def lazy_import(name: str) -> ModuleType:
     Returns:
         (ModuleType): Module object registered in ``sys.modules`` and configured for lazy execution.
     """
-    if name in sys.modules:
-        module = sys.modules[name]
-        if module is None:
-            raise ModuleNotFoundError(f"import of {name!r} halted; None in sys.modules", name=name)
-        return module
+    with _LOCK:
+        if name in sys.modules:
+            module = sys.modules[name]
+            if module is None:
+                raise ModuleNotFoundError(f"import of {name!r} halted; None in sys.modules", name=name)
+            return module
 
-    spec = importlib.util.find_spec(name)
-    if spec is None:
-        raise ModuleNotFoundError(f"No module named {name!r}", name=name)
-    if spec.loader is None:  # Namespace packages have no module body to defer.
-        return importlib.import_module(name)
+        spec = importlib.util.find_spec(name)
+        if spec is None:
+            raise ModuleNotFoundError(f"No module named {name!r}", name=name)
+        if spec.loader is None:  # Namespace packages have no module body to defer.
+            return importlib.import_module(name)
 
-    loader = _LazyLoader(spec.loader)
-    spec.loader = loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    try:
+        loader = _LazyLoader(spec.loader)
+        spec.loader = loader
+        module = importlib.util.module_from_spec(spec)
         loader.exec_module(module)
-    except BaseException:
-        if sys.modules.get(name) is module:
-            del sys.modules[name]
-        raise
-    if "." in name:
-        parent_name, _, child_name = name.rpartition(".")
-        setattr(sys.modules[parent_name], child_name, module)
-    return module
+        sys.modules[name] = module
+        if "." in name:
+            parent_name, _, child_name = name.rpartition(".")
+            setattr(sys.modules[parent_name], child_name, module)
+        return module

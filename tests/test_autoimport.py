@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Event, Thread
+from types import ModuleType
 
 from autoimport import lazy_import
 
@@ -110,6 +112,67 @@ class TestLazyImport(unittest.TestCase):
 
         self.assertEqual(values, [6] * 8)
         self.assertEqual(marker.read_text(), "1")
+
+    def test_concurrent_registration_returns_one_configured_module(self):
+        """Publish one canonical lazy module when multiple threads register the same name."""
+        marker = self.path / "registered-load"
+        self.write_module(
+            "registered_module",
+            f"from pathlib import Path\nPath({str(marker)!r}).touch()\nVALUE = 7\n",
+        )
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            modules = list(executor.map(lambda _: lazy_import("registered_module"), range(8)))
+
+        self.assertTrue(all(module is modules[0] for module in modules))
+        self.assertIs(modules[0], sys.modules["registered_module"])
+        self.assertFalse(marker.exists())
+        self.assertEqual(modules[0].VALUE, 7)
+
+    def test_concurrent_circular_modules_do_not_deadlock(self):
+        """Serialize mutually dependent lazy modules while allowing same-thread recursive loading."""
+        support = ModuleType("cycle_support")
+        support.a_started, support.b_started = Event(), Event()
+        sys.modules["cycle_support"] = support
+        self.module_names.append("cycle_support")
+        self.write_module(
+            "cycle_a",
+            "import cycle_support\n"
+            "A_READY = 1\n"
+            "cycle_support.a_started.set()\n"
+            "cycle_support.b_started.wait(0.2)\n"
+            "VALUE = cycle_support.b.B_READY + 1\n",
+        )
+        self.write_module(
+            "cycle_b",
+            "import cycle_support\n"
+            "B_READY = 1\n"
+            "cycle_support.b_started.set()\n"
+            "cycle_support.a_started.wait(0.2)\n"
+            "VALUE = cycle_support.a.A_READY + 1\n",
+        )
+        support.a, support.b = lazy_import("cycle_a"), lazy_import("cycle_b")
+        values, errors = {}, []
+
+        def access(name, module):
+            try:
+                values[name] = module.VALUE
+            except BaseException as error:
+                errors.append(error)
+
+        threads = [
+            Thread(target=access, args=("a", support.a), daemon=True),
+            Thread(target=access, args=("b", support.b), daemon=True),
+        ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(2)
+
+        self.assertFalse(any(thread.is_alive() for thread in threads), "circular lazy imports deadlocked")
+        if errors:
+            raise errors[0]
+        self.assertEqual(values, {"a": 2, "b": 2})
 
     def test_dotted_module_defers_child_execution(self):
         """Import dotted modules while deferring the requested child module body."""
