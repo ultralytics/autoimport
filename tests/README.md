@@ -1,4 +1,4 @@
-<a href="https://www.ultralytics.com/"><img src="https://raw.githubusercontent.com/ultralytics/assets/main/logo/Ultralytics_Logotype_Original.svg" width="320" alt="Ultralytics logo"></a>
+<a href="https://www.ultralytics.com"><img src="https://raw.githubusercontent.com/ultralytics/assets/main/logo/Ultralytics_Logotype_Original.svg" width="320" alt="Ultralytics logo"></a>
 
 # Tests Directory (`tests/`)
 
@@ -46,7 +46,7 @@ If you prefer to avoid installing external dependencies for basic testing, you c
 -   **Optional tooling:** `pytest` adds useful features such as fixtures, parameterized testing, and coverage plugins when you want them locally.
 -   **CI Integration:** These tests are integrated into [Continuous Integration (CI)](https://github.com/features/actions) pipelines to automatically validate changes before they are merged, ensuring project stability. See the [Ultralytics contributing guide](https://docs.ultralytics.com/help/contributing) for more details on our development process.
 
-Regularly running these tests is essential for maintaining the high quality and reliability expected of [Ultralytics](https://www.ultralytics.com/) projects.
+Regularly running these tests is essential for maintaining the high quality and reliability expected of [Ultralytics](https://www.ultralytics.com) projects.
 
 ## 🤝 Contributing
 
