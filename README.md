@@ -88,9 +88,7 @@ Python 3.15 adds native lazy imports through accepted
 attributes:
 
 ```python
-lazy from pathlib import Path
 
-lazy import torch
 ```
 
 PEP 810 also provides a migration form that keeps ordinary import statements:
