@@ -2,7 +2,7 @@
 
 This file provides guidance to AI coding agents (Claude Code, etc.) when working with code in this repository. CLAUDE.md is a symlink to this file.
 
-Autoimport (`ultralytics-autoimport` on PyPI, AGPL-3.0) is a lightweight Python package for deferring module execution until first attribute access through the explicit `lazy_import()` function and Python's standard `importlib` loader protocol. Supported Python versions are 3.8 through 3.14.
+Autoimport (`ultralytics-autoimport` on PyPI, AGPL-3.0) is a lightweight Python package for deferring module execution until first attribute access through the explicit `lazy_import()` function and Python's standard `importlib` loader protocol. Supported Python versions are 3.8 through 3.15.
 
 ## Core Principles (CRITICAL)
 
@@ -44,7 +44,7 @@ python -m unittest tests/test_autoimport.py -v
 ruff format . && ruff check --fix .
 ```
 
-- CI (`ci.yml`) runs the full `unittest` suite on Python 3.8, 3.13, and 3.14 across Ubuntu, macOS, and Windows.
+- CI (`ci.yml`) runs the full `unittest` suite on Python 3.8, 3.13, and 3.15 across Ubuntu, macOS, and Windows.
 - `pyproject.toml` configures pytest doctests, but CI uses `unittest`; validate with the CI command above unless the change specifically requires pytest behavior.
 
 ## Architecture
@@ -58,6 +58,6 @@ ruff format . && ruff check --fix .
 
 - Every Python and workflow file starts with `# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license`; Ultralytics Actions adds headers automatically, so do not add or revert them manually.
 - Use Google-style docstrings and keep lines within the Ruff-configured 120-character limit.
-- Preserve compatibility across Python 3.8 through 3.14: do not introduce syntax or standard-library APIs outside that range.
+- Preserve compatibility across Python 3.8 through 3.15: do not introduce syntax or standard-library APIs outside that range.
 - Keep the public API in `autoimport/__init__.py` deliberate and minimal. `lazy_import()` supports modules only; do not add transparent proxies for classes, functions, constants, or `from ... import ...` semantics.
 - Releases are version-driven: bump `__version__` in `autoimport/__init__.py`; pushes to `main` by @glenn-jocher run `publish.yml`, which tags and publishes only when that version is newer than PyPI.
