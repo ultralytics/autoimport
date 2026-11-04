@@ -3,4 +3,4 @@
 from autoimport.main import lazy_import
 
 __all__ = ("lazy_import",)
-__version__ = "0.1.0"
+__version__ = "0.1.1"
