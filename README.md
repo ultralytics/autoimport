@@ -6,7 +6,7 @@
 [`importlib` loader protocol](https://docs.python.org/3/library/importlib.html), preserving the canonical module object
 and its identity in `sys.modules`.
 
-The `ultralytics-autoimport` package supports Python 3.8 through 3.14.
+The `ultralytics-autoimport` package supports Python 3.8 through 3.15.
 
 [![autoimport CI](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/ci.yml)
 [![Ultralytics Actions](https://github.com/ultralytics/autoimport/actions/workflows/format.yml/badge.svg)](https://github.com/ultralytics/autoimport/actions/workflows/format.yml)
@@ -104,7 +104,7 @@ PEP 810 also provides a migration form that keeps ordinary import statements:
 On Python 3.15, the listed imports are lazy. Earlier Python versions ignore `__lazy_modules__` and import them eagerly,
 which lets libraries adopt the declaration before dropping older versions. Native lazy imports are the preferred
 long-term solution because the interpreter can replace a lazy binding with any real module, class, function, or constant
-before Python code uses it. `autoimport` remains a narrow module-only option for Python 3.8 through 3.14.
+before Python code uses it. `autoimport` remains a narrow module-only option for Python 3.8 through 3.15.
 
 ## 🛠️ Development
 

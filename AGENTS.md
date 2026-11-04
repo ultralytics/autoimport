@@ -2,7 +2,7 @@
 
 This file provides guidance to AI coding agents (Claude Code, etc.) when working with code in this repository. CLAUDE.md is a symlink to this file.
 
-Autoimport (`ultralytics-autoimport` on PyPI, AGPL-3.0) is a lightweight Python package for deferring module execution until first attribute access through the explicit `lazy_import()` function and Python's standard `importlib` loader protocol. Supported Python versions are 3.8 through 3.14.
+Autoimport (`ultralytics-autoimport` on PyPI, AGPL-3.0) is a lightweight Python package for deferring module execution until first attribute access through the explicit `lazy_import()` function and Python's standard `importlib` loader protocol. Supported Python versions are 3.8 through 3.15.
 
 ## Core Principles (CRITICAL)
 
